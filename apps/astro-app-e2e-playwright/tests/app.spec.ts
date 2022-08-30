@@ -29,22 +29,26 @@ afterEach(async () => {
   await page.close();
 });
 
+const cases = [
+  [
+    'client side rendered CardComponent is rendered',
+    'astro-island[component-export="CardComponent"]',
+    'Angular (Client Side)',
+  ],
+  [
+    'server side rendered CardComponent is rendered',
+    'astro-card',
+    'Angular (server side binding)',
+  ],
+];
+
 describe('AstroApp', () => {
   describe('Given the user has navigated to the home page', () => {
-    test('Then client side rendered CardComponent is rendered', async () => {
-      const componentLocator = page.locator(
-        'astro-island[component-export="CardComponent"]'
+    test.each(cases)('Then %s', async (_, selector, text) => {
+      const componentLocator = page.locator(selector);
+      await expect(componentLocator.locator(`>> text=${text}`)).toContain(
+        new RegExp(text, 'i')
       );
-      await expect(
-        componentLocator.locator('>> text=Angular (Client Side)')
-      ).toContain(/Angular \(Client Side\)/i);
-    });
-
-    test('Then server side rendered CardComponent is rendered', async () => {
-      const componentLocator = page.locator('astro-card');
-      await expect(
-        componentLocator.locator('>> text=Angular (server side binding)')
-      ).toContain(/Angular \(server side binding\)/i);
     });
   });
 });
