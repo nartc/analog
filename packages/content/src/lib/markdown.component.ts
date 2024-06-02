@@ -11,6 +11,7 @@ import {
   ViewContainerRef,
   ViewEncapsulation,
   inject,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -41,6 +42,7 @@ export default class AnalogMarkdownComponent
   private sanitizer = inject(DomSanitizer);
   private route = inject(ActivatedRoute);
   private zone = inject(NgZone);
+  private cdr = inject(ChangeDetectorRef);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly mermaidImport = inject(MERMAID_IMPORT_TOKEN, {
     optional: true,
@@ -58,6 +60,10 @@ export default class AnalogMarkdownComponent
   contentRenderer = inject(ContentRenderer);
 
   constructor() {
+    // NOTE: TransferState quirkiness. Without this setTimeout, TransferState is empty on first load on the client
+    setTimeout(() => {
+      console.log('ran');
+    });
     if (isPlatformBrowser(this.platformId) && this.mermaidImport) {
       // Mermaid can only be loaded on client side
       this.loadMermaid(this.mermaidImport);

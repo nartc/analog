@@ -117,56 +117,16 @@ To configure Shiki, you can pass a `WithShikiHighlighterOptions` object to the `
 ```ts
 import { withShikiHighlighter } from '@analogjs/content/shiki-highlighter';
 
-provideContent(
-  withMarkdownRenderer(),
-  withShikiHighlighter({
-    highlight: { theme: 'nord' },
-  })
-);
+provideContent(withMarkdownRenderer(), withShikiHighlighter({ theme: 'nord' }));
 ```
 
 By default, `withShikiHighlighter` has the following options.
 
 ```json
 {
-  "highlight": {
-    "themes": {
-      "dark": "github-dark",
-      "light": "github-light"
-    }
-  },
-  "highlighter": {
-    "langs": [
-      "json",
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "html",
-      "css",
-      "angular-html",
-      "angular-ts"
-    ],
-    "themes": ["github-dark", "github-light"]
-  }
+  "container": "%s",
+  "themes": { "dark": "github-dark", "light": "github-light" }
 }
-```
-
-Provided options will be merged **shallowly**. For example:
-
-```ts
-import { withShikiHighlighter } from '@analogjs/content/shiki-highlighter';
-
-withShikiHighlighter({
-  highlighter: {
-    // langs will be provied by the default options
-    themes: ['ayu-dark'], // only ayu-dark will be bundled
-  },
-  highlight: {
-    theme: 'ayu-dark', // use ayu-dark as the theme
-    // theme: 'dark-plus' // ERROR: dark-plus is not bundled
-  },
-});
 ```
 
 ### Custom Syntax Highlighter

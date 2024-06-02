@@ -1,52 +1,37 @@
 import { withHighlighter } from '@analogjs/content';
 import { Provider } from '@angular/core';
-import type { BundledLanguage } from 'shiki';
 import {
-  defaultHighlighterOptions,
   SHIKI_CONTAINER_OPTION,
   SHIKI_HIGHLIGHT_OPTIONS,
-  SHIKI_HIGHLIGHTER_OPTIONS,
+  SHIKI_HIGHLIGHTER_THEMES,
   ShikiHighlighter,
-  type ShikiHighlighterOptions,
-  type ShikiHighlightOptions,
+  ShikiHighlightOptions,
 } from './lib/shiki-highlighter';
 
 export { ShikiHighlighter };
 
-export interface WithShikiHighlighterOptions {
-  highlighter?: Partial<ShikiHighlighterOptions> & {
-    additionalLangs?: BundledLanguage[];
-  };
-  highlight?: ShikiHighlightOptions;
+export type WithShikiHighlighterOptions = ShikiHighlightOptions & {
   container?: string;
-}
+};
 
 export function withShikiHighlighter({
-  highlighter = {},
-  highlight = {},
   container = '%s',
+  ...highlight
 }: WithShikiHighlighterOptions = {}): Provider {
-  if (!highlighter.themes) {
-    if (highlight.theme) {
-      highlighter.themes = [highlight.theme];
-    } else if (highlight.themes && typeof highlight.themes === 'object') {
-      highlighter.themes = Object.values(highlight.themes) as string[];
-    } else {
-      highlighter.themes = defaultHighlighterOptions.themes;
-    }
+  const highlighterThemes = [];
+
+  if (!highlight.theme && !highlight.themes) {
+    highlight.themes = { dark: 'github-dark', light: 'github-light' };
   }
 
-  if (!highlighter.langs) {
-    highlighter.langs = defaultHighlighterOptions.langs;
-  }
-
-  if (highlighter.additionalLangs) {
-    highlighter.langs.push(...highlighter.additionalLangs);
-    delete highlighter.additionalLangs;
+  if (highlight.theme) {
+    highlighterThemes.push(highlight.theme);
+  } else if (highlight.themes) {
+    highlighterThemes.push(...Object.values(highlight.themes));
   }
 
   return [
-    { provide: SHIKI_HIGHLIGHTER_OPTIONS, useValue: highlighter },
+    { provide: SHIKI_HIGHLIGHTER_THEMES, useValue: highlighterThemes },
     { provide: SHIKI_HIGHLIGHT_OPTIONS, useValue: highlight },
     { provide: SHIKI_CONTAINER_OPTION, useValue: container },
     withHighlighter({ useClass: ShikiHighlighter }),
